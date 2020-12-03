@@ -21,12 +21,30 @@ namespace adventCal
                 counter++;
             }
             Console.WriteLine($"{counter} lines read");
+            file.Close();
 
             //Console.WriteLine(arr.Count); // 0 - 322
             // original line 0 - 30
+
+            int ans1 = tobog(arr, 1, 1);
+            int ans2 = tobog(arr, 3, 1);
+            int ans3 = tobog(arr, 5, 1);
+            int ans4 = tobog(arr, 7, 1);
+            int ans5 = tobog(arr, 1, 2);
+
+            Console.WriteLine($"Right 1, down 1. Trees: {ans1}");
+            Console.WriteLine($"Right 3, down 1. Trees: {ans2}");
+            Console.WriteLine($"Right 5, down 1. Trees: {ans3}");
+            Console.WriteLine($"Right 7, down 1. Trees: {ans4}");
+            Console.WriteLine($"Right 1, down 2. Trees: {ans5}");
+            Console.WriteLine($"Final answer: {ans1 * ans2 * ans3 * ans4 * ans5}");
+
+            Console.WriteLine("Program done.");
+        }
+
+        private static int tobog(List<string> arr, int right, int down)
+        {
             int treesFound = 0;
-            int right = 0;
-            int down = 0;
             for (int i = 0; i < arr.Count; i++)
             {
                 //Console.WriteLine($"down:{down}, right:{right}");
@@ -40,7 +58,7 @@ namespace adventCal
                 }
                 else
                 {
-                    while (right > arr[down].Length-1)
+                    while (right > arr[down].Length - 1)
                     {
                         //string original = arr[down];
                         string subStr = arr[down].Substring(0, 31);
@@ -52,25 +70,23 @@ namespace adventCal
                 if (arr[down][right] == '#')
                 {
                     //Console.WriteLine("Found tree!");
-                    StringBuilder sb = new StringBuilder(arr[down]);
-                    sb[right] = 'X';
-                    arr[down] = sb.ToString();
+                    //StringBuilder sb = new StringBuilder(arr[down]);
+                    //sb[right] = 'X';
+                    //arr[down] = sb.ToString();
                     treesFound++;
                 }
                 else
                 {
                     //Console.WriteLine("No tree!");
-                    StringBuilder sb = new StringBuilder(arr[down]);
-                    sb[right] = 'O';
-                    arr[down] = sb.ToString();
+                    //StringBuilder sb = new StringBuilder(arr[down]);
+                    //sb[right] = 'O';
+                    //arr[down] = sb.ToString();
                 }
                 Console.WriteLine($"{arr[down]}");
                 right += 3;
                 down += 1;
             }
-            Console.WriteLine($"trees: {treesFound}");
-            file.Close();
-            Console.WriteLine("Program done.");
+            return treesFound;
         }
     }
 }
