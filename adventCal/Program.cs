@@ -40,10 +40,10 @@ namespace adventCal
                 }
                 else
                 {
-                    while (right > arr[down].Length)
+                    while (right > arr[down].Length-1)
                     {
                         //string original = arr[down];
-                        string subStr = arr[down].Substring(0, 30);
+                        string subStr = arr[down].Substring(0, 31);
                         arr[down] += subStr;
                     }
                     //Console.WriteLine("  xIndex is now good");
