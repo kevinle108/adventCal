@@ -45,29 +45,31 @@ namespace adventCal
         private static int tobog(List<string> arr, int right, int down)
         {
             int treesFound = 0;
+            int xCoord = 0;
+            int yCoord = 0;
             for (int i = 0; i < arr.Count; i++)
             {
                 //Console.WriteLine($"down:{down}, right:{right}");
-                if (down < arr.Count)
+                if (yCoord < arr.Count)
                 {
                     //Console.WriteLine("  yIndex is good");
                 }
-                if (right < arr[down].Length)
+                if (xCoord < arr[yCoord].Length)
                 {
                     //Console.WriteLine("  xIndex is good");
                 }
                 else
                 {
-                    while (right > arr[down].Length - 1)
+                    while (xCoord > arr[yCoord].Length - 1)
                     {
                         //string original = arr[down];
-                        string subStr = arr[down].Substring(0, 31);
-                        arr[down] += subStr;
+                        string subStr = arr[yCoord].Substring(0, 11);
+                        arr[yCoord] += subStr;
                     }
                     //Console.WriteLine("  xIndex is now good");
                     //Console.WriteLine($"{arr[down]}");
                 }
-                if (arr[down][right] == '#')
+                if (arr[yCoord][xCoord] == '#')
                 {
                     //Console.WriteLine("Found tree!");
                     //StringBuilder sb = new StringBuilder(arr[down]);
@@ -82,9 +84,9 @@ namespace adventCal
                     //sb[right] = 'O';
                     //arr[down] = sb.ToString();
                 }
-                Console.WriteLine($"{arr[down]}");
-                right += 3;
-                down += 1;
+                //Console.WriteLine($"{arr[down]}");
+                xCoord += right;
+                yCoord += down;
             }
             return treesFound;
         }
