@@ -31,13 +31,14 @@ namespace adventCal
             int ans3 = tobog(arr, 5, 1);
             int ans4 = tobog(arr, 7, 1);
             int ans5 = tobog(arr, 1, 2);
+            long finalAns = ans1 * ans2 * ans3 * ans4 * ans5;
 
             Console.WriteLine($"Right 1, down 1. Trees: {ans1}");
             Console.WriteLine($"Right 3, down 1. Trees: {ans2}");
             Console.WriteLine($"Right 5, down 1. Trees: {ans3}");
             Console.WriteLine($"Right 7, down 1. Trees: {ans4}");
             Console.WriteLine($"Right 1, down 2. Trees: {ans5}");
-            Console.WriteLine($"Final answer: {ans1 * ans2 * ans3 * ans4 * ans5}");
+            Console.WriteLine($"Final answer: {finalAns}");
 
             Console.WriteLine("Program done.");
         }
@@ -47,23 +48,23 @@ namespace adventCal
             int treesFound = 0;
             int xCoord = 0;
             int yCoord = 0;
-            for (int i = 0; i < arr.Count; i++)
+            for (int i = 0; i < arr.Count / down; i++)
             {
-                //Console.WriteLine($"down:{down}, right:{right}");
+                Console.WriteLine($"yCoord:{yCoord}, xCoord:{xCoord}");
                 if (yCoord < arr.Count)
                 {
                     //Console.WriteLine("  yIndex is good");
                 }
                 if (xCoord < arr[yCoord].Length)
                 {
-                    //Console.WriteLine("  xIndex is good");
+                    //Console.WriteLine("  xIndex is good");6tv8
                 }
                 else
                 {
                     while (xCoord > arr[yCoord].Length - 1)
                     {
                         //string original = arr[down];
-                        string subStr = arr[yCoord].Substring(0, 11);
+                        string subStr = arr[yCoord].Substring(0, 31);
                         arr[yCoord] += subStr;
                     }
                     //Console.WriteLine("  xIndex is now good");
@@ -84,7 +85,7 @@ namespace adventCal
                     //sb[right] = 'O';
                     //arr[down] = sb.ToString();
                 }
-                //Console.WriteLine($"{arr[down]}");
+                Console.WriteLine($"{arr[yCoord]}");
                 xCoord += right;
                 yCoord += down;
             }
