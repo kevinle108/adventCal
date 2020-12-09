@@ -1,0 +1,256 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Program start.");
+            StreamReader file = new StreamReader("input.txt");
+            int counter = 0;
+            string line;
+            List<string> lines = new List<string>();
+            while ((line = file.ReadLine()) != null)
+            {
+                //if (counter == 3)
+                //{
+                //    break;
+                //}
+
+                lines.Add(line);
+                counter++;
+            }
+
+            file.Close();
+            int nops = lines.Where(x => x.Split(' ')[0] == "nop").ToList().Count;
+            int jmps = lines.Where(x => x.Split(' ')[0] == "jmp").ToList().Count;
+            int accs = lines.Where(x => x.Split(' ')[0] == "acc").ToList().Count;
+
+            //List<int> nopsIndexList = lines.Where(x => x.Split(' ')[0] == "nop").Select(x => x.IndexOf(x)).ToList();
+            //List<int> jmpsIndexList = lines.Where(x => x.Split(' ')[0] == "jmp").Select(x => x.IndexOf(x)).ToList();
+            //List<int> accsIndexList = lines.Where(x => x.Split(' ')[0] == "acc").Select(x => x.IndexOf(x)).ToList();
+
+            List<int> nopsIndexList = new List<int>();
+            List<List<string>> nopsToJmps = new List<List<string>>();
+            List<int> jmpsIndexList = new List<int>();
+            List<List<string>> jmpsToNops = new List<List<string>>();
+
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i].Split(' ')[0] == "nop")
+                {
+                    List<string> copy = new List<string>();
+                    for (int j = 0; j < lines.Count; j++)
+                    {
+                        if (j == i)
+                        {
+                            string changedLine = lines[j].Replace("nop", "jmp");
+                            copy.Add(changedLine);
+                        }
+                        else
+                        {
+                            string copiedLine = lines[j];
+                            copy.Add(copiedLine);
+                        }
+                    }
+                    nopsToJmps.Add(copy);
+                } 
+                else if (lines[i].Split(' ')[0] == "jmp")
+                {
+                    List<string> copy = new List<string>();
+                    for (int j = 0; j < lines.Count; j++)
+                    {
+                        if (j == i)
+                        {
+                            string changedLine = lines[j].Replace("jmp", "nop");
+                            copy.Add(changedLine);
+                        }
+                        else
+                        {
+                            string copiedLine = lines[j];
+                            copy.Add(copiedLine);
+                        }
+                    }
+                    jmpsToNops.Add(copy);
+                }
+                else
+                {
+                    //do nothing;
+                }
+
+            }
+
+
+
+            Console.WriteLine($"nopsToJmps.Count: {nopsToJmps.Count}");
+            Console.WriteLine($"jmpsToNops.Count: {jmpsToNops.Count}");
+            Console.WriteLine("Nops to jmps");
+            foreach (var set in nopsToJmps)
+            {
+                ResultInLoop(set);
+            }
+
+            Console.WriteLine("\nJmps to nops");
+            foreach (var set in jmpsToNops)
+            {
+                ResultInLoop(set);
+            }
+            
+            ////Console.WriteLine($"accsIndexList.Count: {accsIndexList.Count}");
+
+            ////Display(lines);
+            ////Console.WriteLine($"{counter} lines read");
+
+            //Console.WriteLine("Nops to jmps");
+            //List<List<string>> nopsToJmps = new List<List<string>>();
+            //for (int i = 0; i < nopsIndexList.Count; i++)
+            //{
+            //    int indexToModify = nopsIndexList[i];
+            //    List<string> newInstructionSet = lines;
+            //    newInstructionSet[indexToModify] = newInstructionSet[indexToModify].Replace("nop", "jmp");
+            //    nopsToJmps.Add(newInstructionSet);
+            //}
+
+            ////int stop = 1;
+            //foreach (List<string> instructionSet in nopsToJmps)
+            //{
+            //    //if (stop == 2)
+            //    //{
+            //    //    break;
+            //    //}
+            //    //Display(instructionSet);
+            //    if (ResultInLoop(instructionSet) == false)
+            //    {
+            //        Console.WriteLine("FOUND nopToJmp");
+            //    }
+            //    //stop++;
+            //}
+
+            //Console.WriteLine("jmps to nops");
+            //List<List<string>> jmpsToNops = new List<List<string>>();
+            //for (int i = 0; i < jmpsIndexList.Count; i++)
+            //{
+            //    int indexToModify = jmpsIndexList[i];
+            //    List<string> newInstructionSet = lines;
+            //    newInstructionSet[indexToModify] = newInstructionSet[indexToModify].Replace("jmp", "nop");
+            //    jmpsToNops.Add(newInstructionSet);
+            //}
+
+            ////int stop = 1;
+            //foreach (List<string> instructionSet in jmpsToNops)
+            //{
+            //    //if (stop == 2)
+            //    //{
+            //    //    break;
+            //    //}
+            //    //Display(instructionSet);
+            //    if (ResultInLoop(instructionSet) == false)
+            //    {
+            //        Console.WriteLine("FOUND jnpToNop");
+            //    }
+            //    //stop++;
+            //}
+
+
+            Console.WriteLine("Program done.");
+
+        }
+
+        public static List<string> DeepCopy(List<string> lines)
+        {
+            List<string> result = new List<string>();
+            foreach (string str in lines)
+            {
+                result.Add(str);
+            }
+            return result;
+        }
+
+
+        public static bool ResultInLoop(List<string> lines)
+        {
+            int accumulator = 0;
+            List<int> visited = new List<int>();
+            int curIndex = 0;
+            while (visited.Contains(curIndex) == false)
+            {
+                
+                visited.Add(curIndex);
+
+                if (curIndex > lines.Count - 1)
+                {
+                    Console.WriteLine("Terminated!");
+                    Console.WriteLine($" accumulator: {accumulator}");
+                    return false;
+                }
+                string curLine = lines[curIndex];
+                if (curIndex == lines.Count - 1)
+                {
+                    Console.WriteLine("You are at the last instruction line!");
+                    Console.WriteLine($" last line: {curLine}");
+                }
+                
+                
+                //Console.WriteLine($"curIndex: {curIndex}");
+                //Console.WriteLine($"   curLine: {curLine}");
+                string[] split = curLine.Split(' ');
+                int value = Int32.Parse(split[1]);
+                //Console.WriteLine($"  value: {value}");
+                //foreach (string ele in split)
+                //{
+                //    Console.WriteLine($"   {ele}");
+                //}
+
+                if (split[0] == "acc")
+                {
+                    accumulator += value;
+                }
+                else if (split[0] == "jmp")
+                {
+                    curIndex += value;
+                    continue;
+                }
+                else
+                {
+                    // "nop" -> do nothing    
+                }
+                curIndex++;
+            }
+            Console.WriteLine("Infinite Loop!");
+            return true;
+        }
+
+        
+
+        //}
+        public static void Display<T>(List<T> arr, params string[] parameters)
+        {
+            //foreach (int num in arr)
+            //{
+            //    Console.WriteLine(num);
+            //}
+            arr.ForEach(x => Console.WriteLine(x));
+        }
+
+        public static void DisplayListList(List<List<string>> listArr)
+        {
+            foreach (List<string> arr in listArr)
+            {
+                Console.WriteLine(arr[0]);
+                Console.WriteLine($"   {arr[1]}");
+            }
+        }
+
+        //public static void Display(List<string> arr)
+        //{
+        //    foreach (string str in arr)
+        //    {
+        //        Console.WriteLine(str);
+        //    }
+        //}
+    }
+}

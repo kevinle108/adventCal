@@ -1,0 +1,96 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Program start.");
+            StreamReader file = new StreamReader("input.txt");
+            int counter = 0;
+            string line;
+            List<List<string>> colorsList = new List<List<string>>();
+            while ((line = file.ReadLine()) != null)
+            {
+                //if (counter == 3)
+                //{
+                //    break;
+                //}
+                List<string> split = line.Split(" contain ").ToList();
+                colorsList.Add(split);
+                counter++;
+            }
+
+            file.Close();
+            List<string> searchThis = new List<string>();
+            List<string> foundColors = new List<string>();
+            int colorsCount = 0;
+            searchThis.Add("shiny gold bag");
+            int pass = 1;
+            while (searchThis.Count > 0)
+            {
+                
+                Console.WriteLine($"Pass{pass}");
+                pass++;
+                Console.WriteLine($"colorsList.Count: {colorsList.Count}");
+                Console.WriteLine("Searching for:");
+                Display(searchThis);
+                foundColors = colorsList.Where(a => searchThis.Any(b => a[1].Contains(b))).Select(x => x[0]).ToList();
+                for (int i = 0; i < foundColors.Count; i++)
+                {
+                    foundColors[i] = foundColors[i].TrimEnd('s');
+                }
+                Console.WriteLine("Found colors:");
+                Display(foundColors);
+                Console.WriteLine();
+                colorsList.RemoveAll(x => foundColors.Any(y => x[0].Contains(y)));
+                colorsCount += foundColors.Count;
+                searchThis = foundColors;
+                foundColors = new List<string>();
+                
+            }
+
+            Console.WriteLine($"colorsCount: {colorsCount}");
+
+
+
+            //Console.WriteLine($"{counter} lines read");
+            //DisplayListArr(colorsList);
+            //Console.WriteLine($"colorsList.Count: {colorsList.Count}");
+
+
+            Console.WriteLine("Program done.");
+
+        }
+
+        public static void Display<T>(List<T> arr, params string[] parameters)
+        {
+            //foreach (int num in arr)
+            //{
+            //    Console.WriteLine(num);
+            //}
+            arr.ForEach(x => Console.WriteLine(x));
+        }
+
+        public static void DisplayListList(List<List<string>> listArr)
+        {
+            foreach (List<string> arr in listArr)
+            {
+                Console.WriteLine(arr[0]);
+                Console.WriteLine($"   {arr[1]}");
+            }
+        }
+
+        //public static void Display(List<string> arr)
+        //{
+        //    foreach (string str in arr)
+        //    {
+        //        Console.WriteLine(str);
+        //    }
+        //}
+    }
+}

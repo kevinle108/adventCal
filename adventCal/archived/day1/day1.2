@@ -1,0 +1,50 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+class MainClass {
+  public static void Main (string[] args) {
+    Console.WriteLine ("Program start.");
+    StreamReader file = new StreamReader("input.txt");
+    int counter = 0;
+    string line;
+    List<int> nums = new List<int>();
+    while ((line = file.ReadLine()) != null) 
+    {
+      nums.Add(Int32.Parse(line));
+      counter++;
+    }
+    Console.WriteLine($"{counter} lines read");
+    file.Close();
+    nums = nums.OrderBy(x => x).ToList();
+    for (int i = nums.Count-1; i > -1; i--)
+    {
+      int num1 = nums[i];
+      int diff = 2020 - num1;
+      for (int j = nums.Count-1; j > -1; j--)
+      {
+        int num2 = nums[j];
+        int num3 = diff - num2;
+        if (nums.Contains(num2) && nums.Contains(num3))
+        {
+          Console.WriteLine("Found!");
+          Console.WriteLine($"num1:{num1} & num2:{num2} & num3:{num3}");
+          Console.WriteLine("Answer is:");
+          Console.WriteLine($"{num1 * num2 * num3}");
+          return;
+        }
+      }
+    }
+    //Display(nums);
+    Console.WriteLine ("Program done.");
+
+  }
+
+  public static void Display(List<int> nums) 
+  {
+    foreach (int number in nums) {
+      Console.WriteLine(number);
+    }
+  }
+}

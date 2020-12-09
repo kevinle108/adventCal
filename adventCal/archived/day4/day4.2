@@ -1,0 +1,176 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace AdventCalDay4
+{
+    class Program
+    {
+        static void Main()
+        {
+            //using (StreamReader reader = new StreamReader("input.txt"))
+            //{
+            //    // Read entire text file with ReadToEnd.
+            //    string contents = reader.ReadToEnd();
+            //    //Console.WriteLine(contents);
+            //    string[] splitArr = contents.Split('\n');
+            //    //Console.WriteLine(splitArr.Length); // 0-1137, Length = 1138
+            //    List<string> listPassports = new List<string>();
+            //    string build = "";
+            //    for (int i = 0; i < splitArr.Length; i++)
+            //    {
+            //        if (splitArr[i] != "\r")
+            //        {
+            //            build += splitArr[i];
+            //        }
+            //        else
+            //        {
+            //            listPassports.Add(build);
+            //        }
+            //    }
+            //    foreach (string passport in listPassports)
+            //    {
+            //        Console.WriteLine(passport);
+            //    }
+            //}
+            StreamReader file = new StreamReader("input.txt");
+            string line;
+            string build = "";
+            List<string> passports = new List<string>();
+            while ((line = file.ReadLine()) != null)
+            {
+                if (line != "")
+                {
+                    build = build + " " + line;
+                }
+                else // "\r"
+                {
+                    passports.Add(build);
+                    build = "";
+                }
+            }
+            file.Close();
+            int valids = 0;
+            foreach (string passport in passports)
+            {
+                if (passport.Contains("byr") && passport.Contains("iyr") && passport.Contains("eyr") &&
+                    passport.Contains("hgt") && passport.Contains("hcl") && passport.Contains("ecl") && passport.Contains("pid"))
+                {
+                    List<string> split = passport.Split(' ').ToList();
+                    var byr = split.FirstOrDefault(x => x.Contains("byr"));
+                    var iyr = split.FirstOrDefault(x => x.Contains("iyr"));
+                    var eyr = split.FirstOrDefault(x => x.Contains("eyr"));
+                    var hgt = split.FirstOrDefault(x => x.Contains("hgt"));
+                    var hcl = split.FirstOrDefault(x => x.Contains("hcl"));
+                    var ecl = split.FirstOrDefault(x => x.Contains("ecl"));
+                    var pid = split.FirstOrDefault(x => x.Contains("pid"));
+                    //ValidByr(byr) && ValidIyr(iyr) && ValidEyr(eyr) && ValidHgt(hgt) && ValidHcl(hcl) && ValidEcl(ecl) && ValidPid(pid)
+                    if (ValidByr(byr) && ValidIyr(iyr) && ValidEyr(eyr) && ValidHgt(hgt) && ValidHcl(hcl) && ValidEcl(ecl) && ValidPid(pid))
+                    {
+                        valids++;
+                    }
+                }
+            }
+            Console.WriteLine($"valids: {valids}");
+        }
+
+        private static bool ValidByr(string byr)
+        {
+            int checkThis = Int32.Parse(byr.Substring(4, byr.Length - 4));
+
+            if (checkThis >= 1920 && checkThis <= 2002) 
+            {
+                Console.WriteLine("Byr valid");
+                return true;
+            }
+            Console.WriteLine("Byr invalid");
+            return false;
+        }
+        private static bool ValidIyr(string iyr)
+        {
+            int checkThis = Int32.Parse(iyr.Substring(4, iyr.Length - 4));
+            if (checkThis >= 2010 && checkThis <= 2020)
+            {
+                return true;
+            }
+            return false;
+        }
+        private static bool ValidEyr(string eyr)
+        {
+            int checkThis = Int32.Parse(eyr.Substring(4, eyr.Length - 4));
+            if (checkThis >= 2020 && checkThis <= 2030)
+            {
+                return true;
+            }
+            return false;
+        }
+        private static bool ValidHgt(string hgt)
+        {
+            string checkThis = hgt.Substring(4, hgt.Length - 4);
+            if (checkThis.EndsWith("cm") || checkThis.EndsWith("in"))
+            {
+                if (checkThis.EndsWith("cm"))
+                {
+                    int checkCm = Int32.Parse(checkThis.Split("cm")[0]);
+                    if (checkCm >= 150 && checkCm <= 193)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    int checkIn = Int32.Parse(checkThis.Split("in")[0]);
+                    if (checkIn >= 59 && checkIn <= 76)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        private static bool ValidHcl(string hcl)
+        {
+            string checkThis = hcl.Substring(4, hcl.Length - 4);
+            if (checkThis[0] == '#')
+            {
+                if (checkThis.Length == 7)
+                {
+                    checkThis = checkThis.Substring(1, 6);
+                    if (checkThis.All(c => "0123456789abcdef".Contains(c)))
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+            }
+            return false;
+        }
+        private static bool ValidEcl(string ecl)
+        {
+            string checkThis = ecl.Substring(4, ecl.Length - 4);
+            if (checkThis == "amb" || checkThis == "blu" || checkThis == "brn" || checkThis == "gry" || checkThis == "grn" ||
+                checkThis == "hzl" || checkThis == "oth")
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private static bool ValidPid(string pid)
+        {
+            string checkThis = pid.Substring(4, pid.Length - 4);
+            if (checkThis.Length == 9)
+            {
+                if (checkThis.All(c => "0123456789".Contains(c)))
+            {
+                return true;
+            }
+            }
+            return false;
+        }
+    }
+}

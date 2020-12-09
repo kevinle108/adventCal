@@ -1,0 +1,127 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Program start.");
+            StreamReader file = new StreamReader("input.txt");
+            int counter = 0;
+            string line;
+            List<string> lines = new List<string>();
+            while ((line = file.ReadLine()) != null)
+            {
+                //if (counter == 3)
+                //{
+                //    break;
+                //}
+                
+                lines.Add(line);
+                counter++;
+            }
+            
+            file.Close();
+            int accumulator = 0;
+            List<int> visited = new List<int>();
+            int curIndex = 0;
+            while (visited.Contains(curIndex) == false)
+            {
+                visited.Add(curIndex);
+                string curLine = lines[curIndex];
+                Console.WriteLine($"curIndex: {curIndex}");
+                Console.WriteLine($"   curLine: {curLine}");
+                string[] split = curLine.Split(' ');
+                int value = Int32.Parse(split[1]);
+                //Console.WriteLine($"  value: {value}");
+                //foreach (string ele in split)
+                //{
+                //    Console.WriteLine($"   {ele}");
+                //}
+               
+                if (split[0] == "acc")
+                {
+                    accumulator += value;
+                }
+                else if (split[0] == "jmp")
+                {
+                    curIndex += value;
+                    continue;
+                }
+                else
+                {
+                    // "nop" -> do nothing    
+                }
+                curIndex++;
+            }
+            Console.WriteLine($"\n{counter} lines read");
+            Console.WriteLine($"\naccumulator: {accumulator}");
+
+            //Display(lines);
+            //Console.WriteLine($"{counter} lines read");
+
+            Console.WriteLine("Program done.");
+
+        }
+
+        public static int HowManyBags(List<List<List<string>>> lines, string searchColor)
+        {
+            int totalSum = 1;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i][0][0].Contains(searchColor))
+                {
+                    if (lines[i][1][1].Contains("no other"))
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        for (int j = 1; j < lines[i].Count; j++)
+                        {
+                            int multiplier = Int32.Parse(lines[i][j][0]);
+                            string singleColor = lines[i][j][1];
+                            int singleSum = multiplier * HowManyBags(lines, singleColor);
+                            totalSum += singleSum;
+                        }
+                        return totalSum;
+                    }
+                    
+                }
+            }
+            return totalSum;
+
+        }
+
+        //}
+        public static void Display<T>(List<T> arr, params string[] parameters)
+        {
+            //foreach (int num in arr)
+            //{
+            //    Console.WriteLine(num);
+            //}
+            arr.ForEach(x => Console.WriteLine(x));
+        }
+
+        public static void DisplayListList(List<List<string>> listArr)
+        {
+            foreach (List<string> arr in listArr)
+            {
+                Console.WriteLine(arr[0]);
+                Console.WriteLine($"   {arr[1]}");
+            }
+        }
+
+        //public static void Display(List<string> arr)
+        //{
+        //    foreach (string str in arr)
+        //    {
+        //        Console.WriteLine(str);
+        //    }
+        //}
+    }
+}

@@ -1,0 +1,52 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+class MainClass {
+  public static void Main (string[] args) {
+    Console.WriteLine ("Program start.");
+    StreamReader file = new StreamReader("input.txt");
+    int counter = 0;
+    string line;
+    List<string> str = new List<string>();
+    int valid = 0;
+    int invalid = 0;
+    while ((line = file.ReadLine()) != null) 
+    {
+      string[] arr = line.Split(' ');
+      
+      string[] arr2 = arr[0].Split('-');
+      int index1 = Int32.Parse(arr2[0]) - 1;
+      int index2 = Int32.Parse(arr2[1]) - 1;
+      char c = Char.Parse(arr[1].Trim(':'));
+      string password = arr[2];
+
+      if ((password[index1] == c && password[index2] != c) || (password[index1] != c && password[index2] == c))
+      {
+        valid++;
+      } else 
+      {
+        invalid++;
+      }
+      //Console.WriteLine($"count:{count}");
+      //Console.WriteLine($"min:{min} max:{max} char:{c} passw:{password}");
+      
+      counter++;
+    }
+    Console.WriteLine($"{counter} lines read");
+    Console.WriteLine($"Valid:{valid}");
+    Console.WriteLine($"Invalid:{invalid}");
+    //Display(nums);
+    file.Close();
+    Console.WriteLine ("Program done.");
+
+  }
+
+  public static void Display(List<int> nums) 
+  {
+    foreach (int number in nums) {
+      Console.WriteLine(number);
+    }
+  }
+}

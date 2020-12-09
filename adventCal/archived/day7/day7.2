@@ -1,0 +1,131 @@
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace ConsoleApp1
+{
+    class Program
+    {
+        static void Main()
+        {
+            Console.WriteLine("Program start.");
+            StreamReader file = new StreamReader("input.txt");
+            int counter = 0;
+            string line;
+            List<List<List<string>>> lines = new List<List<List<string>>>();
+            while ((line = file.ReadLine()) != null)
+            {
+                //if (counter == 3)
+                //{
+                //    break;
+                //}
+                List<string> split = line.Split(" contain ").ToList();
+                string mainColor = split[0] + ":";
+                List<List<string>> colorsGuide = new List<List<string>>();
+
+                List<string> lineColor = new List<string>();
+                lineColor.Add(mainColor);
+                colorsGuide.Add(lineColor);
+
+                string rule = split[1];
+
+                List<string> splitRuleColors = split[1].Split(',').ToList();
+
+                for (int i = 0; i < splitRuleColors.Count; i++)
+                {
+                    int trimIndex;
+                    trimIndex = splitRuleColors[i].IndexOf("bag") - 1;
+                    splitRuleColors[i] = splitRuleColors[i].Remove(trimIndex);
+                    splitRuleColors[i] = splitRuleColors[i].Trim(' ');
+                    string valueStr = System.Text.RegularExpressions.Regex.Match(splitRuleColors[i], @"\d+").Value;
+                    //Console.WriteLine(valueStr);
+                    string ruleColor = splitRuleColors[i].Trim(valueStr.ToArray()).Trim(' ');
+                    //Console.WriteLine(ruleColor);
+                    List<string> multColor = new List<string>();
+                    multColor.Add(valueStr);
+                    multColor.Add(ruleColor);
+                    colorsGuide.Add(multColor);
+                }
+                lines.Add(colorsGuide);
+                counter++;
+            }
+            
+            file.Close();
+            //for (int i = 0; i < lines.Count; i++)
+            //{
+            //    Console.WriteLine(lines[i][0][0]); // line level lines[i]
+            //    for (int j = 1; j < lines[i].Count; j++)
+            //    {
+            //        Console.WriteLine(lines[i][j][0]); // multiplier level
+            //        Console.WriteLine(lines[i][j][1]);
+            //        Console.WriteLine();
+            //    }
+            //    Console.WriteLine();
+            //}
+
+            int answer = HowManyBags(lines, "shiny gold");
+            Console.WriteLine($"Answer: {answer-1}");
+
+
+            Console.WriteLine("Program done.");
+
+        }
+
+        public static int HowManyBags(List<List<List<string>>> lines, string searchColor)
+        {
+            int totalSum = 1;
+            for (int i = 0; i < lines.Count; i++)
+            {
+                if (lines[i][0][0].Contains(searchColor))
+                {
+                    if (lines[i][1][1].Contains("no other"))
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        for (int j = 1; j < lines[i].Count; j++)
+                        {
+                            int multiplier = Int32.Parse(lines[i][j][0]);
+                            string singleColor = lines[i][j][1];
+                            int singleSum = multiplier * HowManyBags(lines, singleColor);
+                            totalSum += singleSum;
+                        }
+                        return totalSum;
+                    }
+                    
+                }
+            }
+            return totalSum;
+
+        }
+
+        //}
+        public static void Display<T>(List<T> arr, params string[] parameters)
+        {
+            //foreach (int num in arr)
+            //{
+            //    Console.WriteLine(num);
+            //}
+            arr.ForEach(x => Console.WriteLine(x));
+        }
+
+        public static void DisplayListList(List<List<string>> listArr)
+        {
+            foreach (List<string> arr in listArr)
+            {
+                Console.WriteLine(arr[0]);
+                Console.WriteLine($"   {arr[1]}");
+            }
+        }
+
+        //public static void Display(List<string> arr)
+        //{
+        //    foreach (string str in arr)
+        //    {
+        //        Console.WriteLine(str);
+        //    }
+        //}
+    }
+}
