@@ -10,7 +10,7 @@ namespace ConsoleApp1
         static void Main()
         {
             Console.WriteLine("Program start.");
-            StreamReader file = new StreamReader("input0.txt");
+            StreamReader file = new StreamReader("input.txt");
             int counter = 0;
             string line;
             //List<string> lines = new List<string>();
@@ -27,71 +27,21 @@ namespace ConsoleApp1
                 counter++;
             }
             file.Close();
-            // (max - min) / 3 + 1 => the least amount of elements in the arrangement
-            // lines = lines.OrderBy(x => x).ToList();
-            // List<List<int>> validArrangements = new List<List<int>>();
-            // validArrangements.Add(lines);
-            // int shortestArrangementLength = validArrangements.Min(x => x.Count);
-            // int shortestPossibleArrangement = (lines.Max() + 3) / 3 + 1; 
-            // //Console.WriteLine($"possible: {shortestPossibleArrangement}");
-            // while (shortestArrangementLength >= shortestPossibleArrangement) 
-            // {
-            //     for (int i = 1; i < lines.Count; i++)
-            //     {
-            //         int takeOut = i;
-            //         Console.WriteLine($"taking out: {i}");
-            //         for (int x = 0; i < validArrangements.Count; i++) 
-            //         {
-            //             for (int j = 0; j < lines.Count; j++) 
-            //             {
-            //                 List<int> copy = DeepCopyList(validArrangements[x]);
-            //                 copy.RemoveAt(j);
-            //                 if (IsValidArragement(copy))
-            //                 {
-            //                     validArrangements.Add(copy);
-            //                 }
-            //             }
-            //         }
-            //         shortestArrangementLength = validArrangements.Min(x => x.Count);
-            //     }
-            // }
-            //Console.WriteLine($"valid: {validArrangements}");
+            
             lines = lines.OrderBy(x => x).ToList();
-            int valids = 1;
+            List<int> diffList = new List<int>();
             int jolt = 0;
-            List<int> removeablesList = new List<int>();
-            while (jolt < lines.Max()) 
+            for (int i = 0; i < lines.Count; i++)
             {
-                int range = jolt + 4;
-                var removables = lines.Where(x => x > jolt && x < range).ToList();
-                jolt = removables.Max();
-                removables.Remove(removables.Max());
-                Console.WriteLine("Removables");
-                Display(removables);
-                Console.WriteLine();
-                if (removables.Count > 0) {
-                    if (removables.Count == 3) 
-                    {
-                        valids += 7;
-                    }
-                    else if (removables.Count == 2) 
-                    {
-                        valids += 2;
-                    }
-                    else
-                    {
-                        valids += 1;
-                    }
-
-                    foreach (int num in removables)
-                    {
-                        removeablesList.Add(num);
-                    }  
+                int diff = lines[i] - jolt;
+                if (diff != 3 && diff != 1) 
+                {
+                    Console.WriteLine("FOUND OTHER DIFF VALUE besides 1 or 3!");
                 }
-                
+                diffList.Add(diff);
+                jolt = lines[i];
             }
-            Console.WriteLine($"\nRemoveables Count: {removeablesList.Count}");
-            Console.WriteLine($"\nValids: {valids * 2}");
+            Display(diffList);
             Console.WriteLine($"\n{counter} lines read");
             Console.WriteLine("Program done.");
 
