@@ -33,11 +33,12 @@ namespace ConsoleApp1
             int curRoundCount = -1;
             int prevRoundCount = -1;
             bool keepGoing = true;
+            Display(lines);
             while (keepGoing)
             {
                 Console.WriteLine($"\nRound {round}");
                 ExecuteRound(lines);
-                //Display(lines);
+                Display(lines);
                 curRoundCount = CountOccupiedSeats(lines);
                 Console.WriteLine($"Seats: {curRoundCount}");
                 if (curRoundCount == prevRoundCount)
@@ -49,8 +50,16 @@ namespace ConsoleApp1
                     prevRoundCount = curRoundCount;
                     round++;
                 }
-                
+
             }
+            //Console.WriteLine();
+            //ExecuteRound(lines);
+            //Display(lines);
+            //Console.WriteLine(OccupiedAdj(0, 2, lines));
+
+            ////Console.WriteLine();
+            ////ExecuteRound(lines);
+
 
 
             Console.WriteLine($"\n{counter} lines read");
@@ -92,7 +101,7 @@ namespace ConsoleApp1
                         }
                         else if (self == '#')
                         {
-                            if (surSeatsOccupied >= 4)
+                            if (surSeatsOccupied >= 5)
                             {
                                 rowToEmpty.Add(j);
                             }
@@ -135,110 +144,142 @@ namespace ConsoleApp1
             int lastColIndex = lines[row].Length - 1;
             int lastRowIndex = lines.Count - 1;
             char self = lines[row][col];
-            List<char> seats = new List<char>();
+            int seatsOccupied = 0;
             // check row
-            if (row == 0)
+            // go left
+            int crawlLeft = col - 1;
+            while (crawlLeft >= 0)
             {
-                if (col == 0)
+                if (lines[row][crawlLeft] == 'L') 
                 {
-                    seats.Add(lines[row][col+1]);
-                    seats.Add(lines[row + 1][col]);
-                    seats.Add(lines[row + 1][col + 1]);
+                    break;
                 }
-                else if (col == lastColIndex)
+                if (lines[row][crawlLeft] == '#')
                 {
-                    seats.Add(lines[row][col-1]);
-                    seats.Add(lines[row + 1][col]);
-                    seats.Add(lines[row + 1][col - 1]);
+                    //Console.WriteLine($"Found occupied chair at ({row},{crawlLeft})");
+                    seatsOccupied++;
+                    break;
                 }
-                else
-                {
-                    seats.Add(lines[row][col-1]); 
-                    seats.Add(lines[row][col+1]); 
-                    seats.Add(lines[row + 1][col + 1]); 
-                    seats.Add(lines[row + 1][col]); 
-                    seats.Add(lines[row + 1][col - 1]); 
-                }
+                crawlLeft--;
             }
-            else if (row == lastRowIndex)
+            int crawlRight = col + 1;
+            while (crawlRight <= lines[row].Length - 1)
             {
-                if (col == 0)
+                if (lines[row][crawlRight] == 'L')
                 {
-                    seats.Add(lines[row][col+1]);
-                    seats.Add(lines[row-1][col]);
-                    seats.Add(lines[row-1][col+1]);
+                    break;
                 }
-                else if (col == lastColIndex)
+                if (lines[row][crawlRight] == '#')
                 {
-                    seats.Add(lines[row][col-1]);
-                    seats.Add(lines[row-1][col]);
-                    seats.Add(lines[row-1][col-1]);
+                    //Console.WriteLine($"Found occupied chair at ({row},{crawlRight})");
+                    seatsOccupied++;
+                    break;
                 }
-                else
-                {
-                    seats.Add(lines[row][col-1]); 
-                    seats.Add(lines[row][col+1]); 
-                    seats.Add(lines[row-1][col+1]); 
-                    seats.Add(lines[row-1][col]); 
-                    seats.Add(lines[row-1][col-1]); 
-                }
+                crawlRight++;
             }
-            else // row is not 0 or lastRow
+            int crawlUp = row - 1;
+            while (crawlUp >= 0)
             {
-                if (col == 0)
+                if (lines[crawlUp][col] == 'L')
                 {
-                    seats.Add(lines[row][col+1]); 
-                    seats.Add(lines[row-1][col]); 
-                    seats.Add(lines[row-1][col+1]); 
-                    seats.Add(lines[row + 1][col]); 
-                    seats.Add(lines[row + 1][col + 1]);
+                    break;
                 }
-                else if (col == lastColIndex)
+                if (lines[crawlUp][col] == '#')
                 {
-                    seats.Add(lines[row][col-1]);
-                    seats.Add(lines[row-1][col]);
-                    seats.Add(lines[row-1][col-1]);
-                    seats.Add(lines[row + 1][col]);
-                    seats.Add(lines[row + 1][col - 1]);
+                    //Console.WriteLine($"Found occupied chair at ({crawlUp},{col})");
+                    seatsOccupied++;
+                    break;
                 }
-                else
-                {
-                    seats.Add(lines[row][col - 1]);
-                    seats.Add(lines[row][col + 1]);
-
-                    seats.Add(lines[row - 1][col - 1]);
-                    seats.Add(lines[row - 1][col]);
-                    seats.Add(lines[row - 1][col + 1]);
-
-                    seats.Add(lines[row + 1][col - 1]);
-                    seats.Add(lines[row + 1][col]);
-                    seats.Add(lines[row + 1][col + 1]);
-                }
+                crawlUp--;
             }
-            return seats.Where(x => x == '#').ToList().Count;
+            int crawlDown = row + 1;
+            while (crawlDown <= lines.Count-1)
+            {
+                if (lines[crawlDown][col] == 'L')
+                {
+                    break;
+                }
+                if (lines[crawlDown][col] == '#')
+                {
+                    //Console.WriteLine($"Found occupied chair at ({crawlDown},{col})");
+                    seatsOccupied++;
+                    break;
+                }
+                crawlDown++;
+            }
 
-            //char self = lines[row][col];
-            //char dirLeft = lines[row][col-1];
-            //char dirRight = lines[row][col+1];
+            int crawlUpLeftRow = row - 1;
+            int crawlUpLeftCol = col -1;
+            while (crawlUpLeftRow >= 0 && crawlUpLeftCol >= 0)
+            {
+                if (lines[crawlUpLeftRow][crawlUpLeftCol] == 'L')
+                {
+                    break;
+                }
+                if (lines[crawlUpLeftRow][crawlUpLeftCol] == '#')
+                {
+                    //Console.WriteLine($"Found occupied chair at ({crawlUpLeftRow},{crawlUpLeftCol})");
+                    seatsOccupied++;
+                    break;
+                }
+                crawlUpLeftRow--;
+                crawlUpLeftCol--;
+            }
 
-            //char aboveLeft = lines[row-1][col-1];
-            //char aboveCenter = lines[row-1][col];
-            //char aboveRight = lines[row-1][col+1];
+            int crawlUpRightRow = row - 1;
+            int crawlUpRightCol = col + 1;
+            while (crawlUpRightRow >= 0 && crawlUpRightCol <= lines[crawlUpRightRow].Length-1)
+            {
+                if (lines[crawlUpRightRow][crawlUpRightCol] == 'L')
+                {
+                    break;
+                }
+                if (lines[crawlUpRightRow][crawlUpRightCol] == '#')
+                {
+                    //Console.WriteLine($"Found occupied chair at ({crawlUpRightRow},{crawlUpRightCol})");
+                    seatsOccupied++;
+                    break;
+                }
+                crawlUpRightRow--;
+                crawlUpRightCol++;
+            }
 
-            //char belowLeft = lines[row + 1][col - 1];
-            //char belowCenter = lines[row + 1][col];
-            //char belowRight = lines[row + 1][col + 1];
+            int crawlDownLeftRow = row + 1;
+            int crawlDownLeftCol = col - 1;
+            while (crawlDownLeftRow <= lines.Count-1 && crawlDownLeftCol >= 0)
+            {
+                if (lines[crawlDownLeftRow][crawlDownLeftCol] == 'L')
+                {
+                    break;
+                }
+                if (lines[crawlDownLeftRow][crawlDownLeftCol] == '#')
+                {
+                    //Console.WriteLine($"Found occupied chair at ({crawlDownLeftRow},{crawlDownLeftCol})");
+                    seatsOccupied++;
+                    break;
+                }
+                crawlDownLeftRow++;
+                crawlDownLeftCol--;
+            }
 
-            // 0, 0 -> dirRight, belowCenter, belowRight
-            // 0, 94 -> dirLeft, belowCenter, belowLeft
-            // 0, col -> dirLeft, dirRight, belowRight, belowCenter, belowLeft
-
-            // row, 0 -> dirRight, aboveCenter, aboveRight, belowCenter, belowRight
-            // row, 94 -> dirLeft, aboveCenter, aboveLeft, belowCenter, belowLeft
-
-            // 89, 0 -> dirRight, aboveCenter, aboveRight
-            // 89, 94 -> dirLeft, aboveCenter, aboveLeft
-            // 89, col -> dirLeft, dirRight, aboveCenter, aboveLeft, aboveCenter, aboveRight
+            int crawlDownRightRow = row + 1;
+            int crawlDownRightCol = col + 1;
+            while (crawlDownRightRow <= lines.Count - 1 && crawlDownRightCol <= lines[crawlDownRightRow].Length-1)
+            {
+                if (lines[crawlDownRightRow][crawlDownRightCol] == 'L')
+                {
+                    break;
+                }
+                if (lines[crawlDownRightRow][crawlDownRightCol] == '#')
+                {
+                    //Console.WriteLine($"Found occupied chair at ({crawlDownRightRow},{crawlDownRightCol})");
+                    seatsOccupied++;
+                    break;
+                }
+                crawlDownRightRow++;
+                crawlDownRightCol++;
+            }
+            return seatsOccupied;
         }
 
         public static List<int> DeepCopyList(List<int> lines)
