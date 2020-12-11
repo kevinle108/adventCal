@@ -11,7 +11,7 @@ namespace ConsoleApp1
         static void Main()
         {
             Console.WriteLine("Program start.");
-            StreamReader file = new StreamReader("input.txt");
+            StreamReader file = new StreamReader("input0.txt");
             int counter = 0;
             string line;
             //List<string> lines = new List<string>();
