@@ -72,7 +72,7 @@ namespace ConsoleApp1
                 lines[i] = sb.ToString();
             }
 
-
+            Display(lines);
 
 
             Console.WriteLine($"\n{counter} lines read");
