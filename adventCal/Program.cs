@@ -11,7 +11,7 @@ namespace ConsoleApp1
         static void Main()
         {
             Console.WriteLine("Program start.");
-            StreamReader file = new StreamReader("input0.txt");
+            StreamReader file = new StreamReader("input.txt");
             int counter = 0;
             string line;
             //List<string> lines = new List<string>();
@@ -23,11 +23,53 @@ namespace ConsoleApp1
                 //{
                 //    break;
                 //}
-                Console.WriteLine(line.Length);
+                //Console.WriteLine(line.Length);
                 lines.Add(line);
                 counter++;
             }
             file.Close();
+
+            int round = 1;
+            int curRoundCount = -1;
+            int prevRoundCount = -1;
+            bool keepGoing = true;
+            while (keepGoing)
+            {
+                Console.WriteLine($"\nRound {round}");
+                ExecuteRound(lines);
+                //Display(lines);
+                curRoundCount = CountOccupiedSeats(lines);
+                Console.WriteLine($"Seats: {curRoundCount}");
+                if (curRoundCount == prevRoundCount)
+                {
+                    keepGoing = false;
+                }
+                else
+                {
+                    prevRoundCount = curRoundCount;
+                    round++;
+                }
+                
+            }
+
+
+            Console.WriteLine($"\n{counter} lines read");
+            Console.WriteLine("Program done.");
+
+        }
+
+        private static int CountOccupiedSeats(List<string> lines)
+        {
+            int sumSeats = 0;
+            foreach (string str in lines)
+            {
+                sumSeats += str.Where(x => x == '#').ToList().Count;
+            }
+            return sumSeats;
+        }
+
+        private static void ExecuteRound(List<string> lines)
+        {
             List<List<int>> toEmpty = new List<List<int>>();
             List<List<int>> toOccupied = new List<List<int>>();
             for (int i = 0; i < lines.Count; i++) // for each line string
@@ -38,14 +80,27 @@ namespace ConsoleApp1
                 for (int j = 0; j < lines[i].Length; j++) // for each char in string
                 {
                     char self = lines[i][j];
-                    int surSeatsOccupied = OccupiedAdj(i, j, lines);
-                    if (self == 'L' && surSeatsOccupied == 0)
+                    if (self == 'L' || self == '#')
                     {
-                        rowToOccupied.Add(j);
-                    }
-                    else if (self == '#' && surSeatsOccupied >= 4)
-                    {
-                        rowToEmpty.Add(j);
+                        int surSeatsOccupied = OccupiedAdj(i, j, lines);
+                        if (self == 'L')
+                        {
+                            if (surSeatsOccupied == 0)
+                            {
+                                rowToOccupied.Add(j);
+                            }
+                        }
+                        else if (self == '#')
+                        {
+                            if (surSeatsOccupied >= 4)
+                            {
+                                rowToEmpty.Add(j);
+                            }
+                        }
+                        else
+                        {
+                            // do nothing
+                        }
                     }
                 }
                 toEmpty.Add(rowToEmpty);
@@ -57,27 +112,22 @@ namespace ConsoleApp1
                 StringBuilder sb = new StringBuilder(lines[i]);
                 for (int j = 0; j < toEmpty[i].Count; j++)
                 {
-                    sb[j] = 'L';
+                    int index = toEmpty[i][j];
+                    sb[index] = 'L';
                 }
                 lines[i] = sb.ToString();
             }
 
-            for (int i = 0; i < toEmpty.Count; i++)
+            for (int i = 0; i < toOccupied.Count; i++)
             {
                 StringBuilder sb = new StringBuilder(lines[i]);
-                for (int j = 0; j < toEmpty[i].Count; j++)
+                for (int j = 0; j < toOccupied[i].Count; j++)
                 {
-                    sb[j] = '#';
+                    int index = toOccupied[i][j];
+                    sb[index] = '#';
                 }
                 lines[i] = sb.ToString();
             }
-
-            Display(lines);
-
-
-            Console.WriteLine($"\n{counter} lines read");
-            Console.WriteLine("Program done.");
-
         }
 
         public static int OccupiedAdj(int row, int col, List<string> lines)
