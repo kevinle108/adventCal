@@ -2,6 +2,7 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace ConsoleApp1
 {
@@ -14,45 +15,180 @@ namespace ConsoleApp1
             int counter = 0;
             string line;
             //List<string> lines = new List<string>();
-            List<int> lines = new List<int>();
-            
+            List<string> lines = new List<string>();
+            // 0 - 89 rows, 0 - 94 cols
             while ((line = file.ReadLine()) != null)
             {
                 //if (counter == 3)
                 //{
                 //    break;
                 //}
-
-                lines.Add(Int32.Parse(line));
+                Console.WriteLine(line.Length);
+                lines.Add(line);
                 counter++;
             }
             file.Close();
-            
-            lines = lines.OrderBy(x => x).ToList();
-            List<int> diffList = new List<int>();
-            int jolt = 0;
-            for (int i = 0; i < lines.Count; i++)
+            List<List<int>> toEmpty = new List<List<int>>();
+            List<List<int>> toOccupied = new List<List<int>>();
+            for (int i = 0; i < lines.Count; i++) // for each line string
             {
-                int diff = lines[i] - jolt;
-                if (diff != 3 && diff != 1) 
+                List<int> rowToEmpty = new List<int>();
+                List<int> rowToOccupied = new List<int>();
+
+                for (int j = 0; j < lines[i].Length; j++) // for each char in string
                 {
-                    Console.WriteLine("FOUND OTHER DIFF VALUE besides 1 or 3!");
+                    char self = lines[i][j];
+                    int surSeatsOccupied = OccupiedAdj(i, j, lines);
+                    if (self == 'L' && surSeatsOccupied == 0)
+                    {
+                        rowToOccupied.Add(j);
+                    }
+                    else if (self == '#' && surSeatsOccupied >= 4)
+                    {
+                        rowToEmpty.Add(j);
+                    }
                 }
-                diffList.Add(diff);
-                jolt = lines[i];
+                toEmpty.Add(rowToEmpty);
+                toOccupied.Add(rowToOccupied);
             }
-            Display(diffList);
+
+            for (int i = 0; i < toEmpty.Count; i++)
+            {
+                StringBuilder sb = new StringBuilder(lines[i]);
+                for (int j = 0; j < toEmpty[i].Count; j++)
+                {
+                    sb[j] = 'L';
+                }
+                lines[i] = sb.ToString();
+            }
+
+            for (int i = 0; i < toEmpty.Count; i++)
+            {
+                StringBuilder sb = new StringBuilder(lines[i]);
+                for (int j = 0; j < toEmpty[i].Count; j++)
+                {
+                    sb[j] = '#';
+                }
+                lines[i] = sb.ToString();
+            }
+
+
+
+
             Console.WriteLine($"\n{counter} lines read");
             Console.WriteLine("Program done.");
 
         }
 
-        public static int Factorial(int number)
+        public static int OccupiedAdj(int row, int col, List<string> lines)
         {
-            if (number == 1)
-                return 1;
-            else
-                return Factorial(number - 1);
+            int lastColIndex = lines[row].Length - 1;
+            int lastRowIndex = lines.Count - 1;
+            char self = lines[row][col];
+            List<char> seats = new List<char>();
+            // check row
+            if (row == 0)
+            {
+                if (col == 0)
+                {
+                    seats.Add(lines[row][col+1]);
+                    seats.Add(lines[row + 1][col]);
+                    seats.Add(lines[row + 1][col + 1]);
+                }
+                else if (col == lastColIndex)
+                {
+                    seats.Add(lines[row][col-1]);
+                    seats.Add(lines[row + 1][col]);
+                    seats.Add(lines[row + 1][col - 1]);
+                }
+                else
+                {
+                    seats.Add(lines[row][col-1]); 
+                    seats.Add(lines[row][col+1]); 
+                    seats.Add(lines[row + 1][col + 1]); 
+                    seats.Add(lines[row + 1][col]); 
+                    seats.Add(lines[row + 1][col - 1]); 
+                }
+            }
+            else if (row == lastRowIndex)
+            {
+                if (col == 0)
+                {
+                    seats.Add(lines[row][col+1]);
+                    seats.Add(lines[row-1][col]);
+                    seats.Add(lines[row-1][col+1]);
+                }
+                else if (col == lastColIndex)
+                {
+                    seats.Add(lines[row][col-1]);
+                    seats.Add(lines[row-1][col]);
+                    seats.Add(lines[row-1][col-1]);
+                }
+                else
+                {
+                    seats.Add(lines[row][col-1]); 
+                    seats.Add(lines[row][col+1]); 
+                    seats.Add(lines[row-1][col+1]); 
+                    seats.Add(lines[row-1][col]); 
+                    seats.Add(lines[row-1][col-1]); 
+                }
+            }
+            else // row is not 0 or lastRow
+            {
+                if (col == 0)
+                {
+                    seats.Add(lines[row][col+1]); 
+                    seats.Add(lines[row-1][col]); 
+                    seats.Add(lines[row-1][col+1]); 
+                    seats.Add(lines[row + 1][col]); 
+                    seats.Add(lines[row + 1][col + 1]);
+                }
+                else if (col == lastColIndex)
+                {
+                    seats.Add(lines[row][col-1]);
+                    seats.Add(lines[row-1][col]);
+                    seats.Add(lines[row-1][col-1]);
+                    seats.Add(lines[row + 1][col]);
+                    seats.Add(lines[row + 1][col - 1]);
+                }
+                else
+                {
+                    seats.Add(lines[row][col - 1]);
+                    seats.Add(lines[row][col + 1]);
+
+                    seats.Add(lines[row - 1][col - 1]);
+                    seats.Add(lines[row - 1][col]);
+                    seats.Add(lines[row - 1][col + 1]);
+
+                    seats.Add(lines[row + 1][col - 1]);
+                    seats.Add(lines[row + 1][col]);
+                    seats.Add(lines[row + 1][col + 1]);
+                }
+            }
+            return seats.Where(x => x == '#').ToList().Count;
+
+            //char self = lines[row][col];
+            //char dirLeft = lines[row][col-1];
+            //char dirRight = lines[row][col+1];
+
+            //char aboveLeft = lines[row-1][col-1];
+            //char aboveCenter = lines[row-1][col];
+            //char aboveRight = lines[row-1][col+1];
+
+            //char belowLeft = lines[row + 1][col - 1];
+            //char belowCenter = lines[row + 1][col];
+            //char belowRight = lines[row + 1][col + 1];
+
+            // 0, 0 -> dirRight, belowCenter, belowRight
+            // 0, 94 -> dirLeft, belowCenter, belowLeft
+            // 0, col -> dirLeft, dirRight, belowRight, belowCenter, belowLeft
+
+            // row, 0 -> dirRight, aboveCenter, aboveRight, belowCenter, belowRight
+            // row, 94 -> dirLeft, aboveCenter, aboveLeft, belowCenter, belowLeft
+
+            // 89, 0 -> dirRight, aboveCenter, aboveRight
+            // 89, 94 -> dirLeft, aboveCenter, aboveLeft
+            // 89, col -> dirLeft, dirRight, aboveCenter, aboveLeft, aboveCenter, aboveRight
         }
 
         public static List<int> DeepCopyList(List<int> lines)
@@ -65,24 +201,6 @@ namespace ConsoleApp1
             return copyList;
         }
 
-        public static bool IsValidArragement(List<int> lines)
-        {
-            bool isValid = true;
-            int jolt = 0;
-            int jolt_diff = 0;
-            for (int i = 0; i < lines.Count; i++)
-            {
-                jolt_diff = lines[i] - jolt;
-                jolt = lines[i];
-                if (!(jolt_diff >= 1 && jolt_diff <= 3))
-                {
-                    //Console.WriteLine($"line{i}, jolt_diff: {jolt_diff}");
-                    isValid = false;
-                    return isValid;
-                }
-            }
-            return isValid;
-        }
         public static void Display<T>(List<T> arr, params string[] parameters)
         {
             //foreach (int num in arr)
