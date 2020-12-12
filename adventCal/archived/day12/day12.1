@@ -28,61 +28,121 @@ namespace ConsoleApp1
                 counter++;
             }
             file.Close();
+            int north = 0;
+            int south = 0;
+            int east = 0;
+            int west = 0;
+            string curDirection = "east";
             int xCoord = 0;
             int yCoord = 0;
-            int wpX = 10;
-            int wpY = 1;
-
             for (int i = 0; i < lines.Count; i++)
             {
                 string command = lines[i][0].ToString();
                 int value = Int32.Parse(lines[i].Substring(1, lines[i].Length - 1));
-                switch (command)
+                if (command == "L")
                 {
-                    case "N":
-                        wpY += value;
-                        break;
-                    case "S":
-                        wpY -= value;
-                        break;
-                    case "E":
-                        wpX += value;
-                        break;
-                    case "W":
-                        wpX -= value;
-                        break;
-                    case "L":
-                        int rotationCC = value / 90;
-                        for (int j = 1; j <= rotationCC; j++)
+                    int rotations = value / 90;
+                    for (int r = 1; r <= rotations; r++)
+                    {
+                        switch (curDirection)
                         {
-                            int oldWpX = wpX;
-                            int oldWpY = wpY;
-                            wpX = oldWpY * -1;
-                            wpY = oldWpX;
+                            case "east":
+                                curDirection = "north";
+                                break;
+                            case "north":
+                                curDirection = "west";
+                                break;
+                            case "west":
+                                curDirection = "south";
+                                break;
+                            case "south":
+                                curDirection = "east";
+                                break;
+                            default:
+                                Console.WriteLine("Cannot determine which direction to turn L");
+                                break;
                         }
-                        break;
-                    case "R":
-                        int rotationC = value / 90;
-                        for (int j = 1; j <= rotationC; j++)
-                        {
-                            int oldWpX = wpX;
-                            int oldWpY = wpY;
-                            wpX = oldWpY;
-                            wpY = oldWpX * -1;
-                        }
-                        break;
-                    case "F":
-                        xCoord += wpX * value;
-                        yCoord += wpY * value;
-                        break;
-                    default:
-                        Console.WriteLine($"Cannot determine command!");
-                        break;
+                    }
+
                 }
+                else if (command == "R")
+                {
+                    int rotations = value / 90;
+                    for (int r = 1; r <= rotations; r++)
+                    {
+                        switch (curDirection)
+                        {
+                            case "east":
+                                curDirection = "south";
+                                break;
+                            case "south":
+                                curDirection = "west";
+                                break;
+                            case "west":
+                                curDirection = "north";
+                                break;
+                            case "north":
+                                curDirection = "east";
+                                break;
+                            default:
+                                Console.WriteLine("Cannot determine which direction to turn R");
+                                break;
+                        }
+                    }
+                    
+                }
+                else if (command == "F")
+                {
+                    switch (curDirection)
+                    {
+                        case "east":
+                            east += value;
+                            break;
+                        case "south":
+                            south += value;
+                            break;
+                        case "west":
+                            west += value;
+                            break;
+                        case "north":
+                            north += value;
+                            break;
+                        default:
+                            Console.WriteLine("Cannot determine how to move forward");
+                            break;
+                    }
+                }
+                else // command is N, S, E, or W
+                {
+                    switch (command)
+                    {
+                        case "N":
+                            north += value;
+                            break;
+                        case "S":
+                            south += value;
+                            break;
+                        case "E":
+                            east += value;
+                            break;
+                        case "W":
+                            west += value;
+                            break;
+                        default:
+                            Console.WriteLine("Cannot determine the command at all!");
+                            break;
+                    }
+                }
+                xCoord += (north - south);
+                yCoord += (east - west);
+                north = 0;
+                south = 0;
+                east = 0;
+                west = 0;
             }
 
             int answer = Math.Abs(xCoord) + Math.Abs(yCoord);
-            //Console.WriteLine($"curent direction: {curDirection}");
+            Console.WriteLine($"curent direction: {curDirection}");
             Console.WriteLine($"xCoord: {xCoord}");
             Console.WriteLine($"yCoord: {yCoord}");
             //Console.WriteLine($"north {north}");
