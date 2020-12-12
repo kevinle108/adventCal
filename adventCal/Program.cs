@@ -41,45 +41,55 @@ namespace ConsoleApp1
                 int value = Int32.Parse(lines[i].Substring(1, lines[i].Length - 1));
                 if (command == "L")
                 {
-                    switch (curDirection)
+                    int rotations = value / 90;
+                    for (int r = 0; r <= rotations; r++)
                     {
-                        case "east":
-                            curDirection = "north";
-                            break;
-                        case "north":
-                            curDirection = "west";
-                            break;
-                        case "west":
-                            curDirection = "south";
-                            break;
-                        case "south":
-                            curDirection = "east";
-                            break;
-                        default:
-                            Console.WriteLine("Cannot determine which direction to turn L");
-                            break;
+                        switch (curDirection)
+                        {
+                            case "east":
+                                curDirection = "north";
+                                break;
+                            case "north":
+                                curDirection = "west";
+                                break;
+                            case "west":
+                                curDirection = "south";
+                                break;
+                            case "south":
+                                curDirection = "east";
+                                break;
+                            default:
+                                Console.WriteLine("Cannot determine which direction to turn L");
+                                break;
+                        }
                     }
+
                 }
                 else if (command == "R")
                 {
-                    switch (curDirection)
+                    int rotations = value / 90;
+                    for (int r = 0; r <= rotations; r++)
                     {
-                        case "east":
-                            curDirection = "south";
-                            break;
-                        case "south":
-                            curDirection = "west";
-                            break;
-                        case "west":
-                            curDirection = "north";
-                            break;
-                        case "north":
-                            curDirection = "east";
-                            break;
-                        default:
-                            Console.WriteLine("Cannot determine which direction to turn R");
-                            break;
+                        switch (curDirection)
+                        {
+                            case "east":
+                                curDirection = "south";
+                                break;
+                            case "south":
+                                curDirection = "west";
+                                break;
+                            case "west":
+                                curDirection = "north";
+                                break;
+                            case "north":
+                                curDirection = "east";
+                                break;
+                            default:
+                                Console.WriteLine("Cannot determine which direction to turn R");
+                                break;
+                        }
                     }
+                    
                 }
                 else if (command == "F")
                 {
