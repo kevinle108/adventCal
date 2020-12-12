@@ -42,7 +42,7 @@ namespace ConsoleApp1
                 if (command == "L")
                 {
                     int rotations = value / 90;
-                    for (int r = 0; r <= rotations; r++)
+                    for (int r = 1; r <= rotations; r++)
                     {
                         switch (curDirection)
                         {
@@ -68,7 +68,7 @@ namespace ConsoleApp1
                 else if (command == "R")
                 {
                     int rotations = value / 90;
-                    for (int r = 0; r <= rotations; r++)
+                    for (int r = 1; r <= rotations; r++)
                     {
                         switch (curDirection)
                         {
