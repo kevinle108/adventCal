@@ -15,87 +15,109 @@ namespace ConsoleApp1
             int counter = 0;
             string line;
             //List<string> lines = new List<string>();
-            List<string> lines = new List<string>();
-            // 0 - 89 rows, 0 - 94 cols
-            while ((line = file.ReadLine()) != null)
-            {
-                //if (counter == 3)
-                //{
-                //    break;
-                //}
-                //Console.WriteLine(line.Length);
-                lines.Add(line);
-                counter++;
-            }
+            int time = Int32.Parse(file.ReadLine());
+            string buses = file.ReadLine();
             file.Close();
-            int xCoord = 0;
-            int yCoord = 0;
-            int wpX = 10;
-            int wpY = 1;
+            List<int> busIds = new List<int>();
+            List<int> busIdsTDiff = new List<int>();
+            List<string> split = buses.Split(',').ToList();
 
-            for (int i = 0; i < lines.Count; i++)
+            int tCount = 0;
+            string strAdd = $"# {tCount}";
+            for (int i = 0; i < split.Count; i++)
             {
-                string command = lines[i][0].ToString();
-                int value = Int32.Parse(lines[i].Substring(1, lines[i].Length - 1));
-                switch (command)
+                split[i] += " " + strAdd;
+                tCount++;
+                strAdd = $"# {tCount}";
+            }
+
+            foreach (string id in split)
+            {
+                if (id[0] != 'x')
                 {
-                    case "N":
-                        wpY += value;
-                        break;
-                    case "S":
-                        wpY -= value;
-                        break;
-                    case "E":
-                        wpX += value;
-                        break;
-                    case "W":
-                        wpX -= value;
-                        break;
-                    case "L":
-                        int rotationCC = value / 90;
-                        for (int j = 1; j <= rotationCC; j++)
-                        {
-                            int oldWpX = wpX;
-                            int oldWpY = wpY;
-                            wpX = oldWpY * -1;
-                            wpY = oldWpX;
-                        }
-                        break;
-                    case "R":
-                        int rotationC = value / 90;
-                        for (int j = 1; j <= rotationC; j++)
-                        {
-                            int oldWpX = wpX;
-                            int oldWpY = wpY;
-                            wpX = oldWpY;
-                            wpY = oldWpX * -1;
-                        }
-                        break;
-                    case "F":
-                        xCoord += wpX * value;
-                        yCoord += wpY * value;
-                        break;
-                    default:
-                        Console.WriteLine($"Cannot determine command!");
-                        break;
+                    string[] splitId = id.Split('#');
+
+                    busIds.Add(Int32.Parse(splitId[0]));
+                    busIdsTDiff.Add(Int32.Parse(splitId[1]));
                 }
             }
 
-            int answer = Math.Abs(xCoord) + Math.Abs(yCoord);
-            //Console.WriteLine($"curent direction: {curDirection}");
-            Console.WriteLine($"xCoord: {xCoord}");
-            Console.WriteLine($"yCoord: {yCoord}");
-            //Console.WriteLine($"north {north}");
-            //Console.WriteLine($"south {south}");
-            //Console.WriteLine($"east {east}");
-            //Console.WriteLine($"west {west}");
-            Console.WriteLine($"\nanswer: {answer}");
-            //Console.WriteLine($" {}");
+
+            //Display(split);
+            //Console.WriteLine();
+            //Display(busIds);
+            //Console.WriteLine();
+            //Display(busIdsTDiff);
+            List<List<int>> multiples = new List<List<int>>();
+            int idIndex = 0;
+            foreach (int bus in busIds)
+            {
+                List<int> idMultiple = new List<int>();
+
+                idMultiple.Add(busIds[idIndex]);
+                idIndex++;
+                multiples.Add(idMultiple);
+            }
+            bool keepGoing = true;
+            int t0 = busIds[0]; // 17
+            int t0Index = 0;
+            int t1Index = 0;
+            int exitLoop = 0;
+ 
+            while (!(multiples[1].Contains(multiples[0].Last() + busIdsTDiff[1])))
+            {
+ 
+                if (multiples[1].Contains(multiples[0].Last() + busIdsTDiff[1]))
+                {
+                    while (!(multiples[2].Contains(multiples[0].Last() + busIdsTDiff[2])))
+                    {
+
+                        if (multiples[2].Contains(multiples[0].Last() + busIdsTDiff[2]))
+                        {
+                            Console.WriteLine("#####");
+                            break;
+                        }
+                    }
+                }
+                if (multiples[1].Last() > multiples[0].Last() + busIdsTDiff[1])
+                {
+                    multiples[0].Add(multiples[0].Last() + multiples[0][0]);
+                }
+                multiples[1].Add(multiples[1].Last() + multiples[1][0]);
+            }
+
+            DisplayNestedList(multiples);
 
 
-            Console.WriteLine($"\n{counter} lines read");
+
+
+
+
+            //Console.WriteLine($"\n{counter} lines read");
             Console.WriteLine("Program done.");
 
+        }
+
+        private static void DisplayNestedList(List<List<int>> multiples)
+        {
+            foreach (var item in multiples)
+            {
+                Console.WriteLine();
+                Display(item);
+            }
+        }
+
+        private static void DiplayNestedList(List<List<int>> departures)
+        {
+            foreach (List<int> bus in departures)
+            {
+                Console.Write("\n ");
+                foreach (int departTime in bus)
+                {
+                    Console.Write($" {departTime}");
+                }
+                Console.WriteLine();
+            }
         }
 
         private static int CountOccupiedSeats(List<string> lines)
